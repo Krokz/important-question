@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="ליה, דייט שני?">
+<meta property="og:description" content="שאלה חשובה מאוד!!!">
+<title>ליה, דייט שני?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Gveret+Levin&display=swap">
+<style>
+  /* layout: one notebook page, a single centered column: drawing, the note, then the two buttons */
+  :root {
+    --paper: #fffffb;
+    --rule: #c9dcf2;
+    --margin: #f2a3a3;
+    --ink: #24235e;
+    --pink: #d42f82;
+    --blue: #2a5bcc;
+    --orange: #c85a08;
+    --purple: #7438bd;
+    --red: #d9352a;
+    --green: #237f33;
+    --yes: #8ad86f;
+    --no: #ffaaa2;
+    --hand: "Gveret Levin", "Amatic SC", "Varela Round", "Arial Hebrew", system-ui, sans-serif;
+    --scrawl: "Amatic SC", "Gveret Levin", "Arial Hebrew", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--hand);
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(to left, transparent 22px, var(--margin) 22px, var(--margin) 24px, transparent 24px),
+      repeating-linear-gradient(to bottom, transparent 0 35px, var(--rule) 35px 36px);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .page {
+    box-sizing: border-box;
+    min-height: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+    padding-inline: 16px;
+    padding-block: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+  }
+  .eyebrow {
+    margin: 0;
+    font-size: clamp(22px, 6vw, 30px);
+    color: var(--red);
+    transform: rotate(-3deg);
+    text-decoration: underline wavy var(--red) 2px;
+    text-underline-offset: 8px;
+  }
+  .drawing { width: 100%; max-width: 420px; height: auto; display: block; }
+  .note { display: flex; flex-direction: column; gap: 2px; }
+  .note p {
+    margin: 0;
+    font-size: clamp(27px, 7.6vw, 40px);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .note p:nth-child(odd) { transform: rotate(-1.6deg); }
+  .note p:nth-child(even) { transform: rotate(1.2deg); }
+  .c1 { color: var(--pink); }
+  .c2 { color: var(--blue); }
+  .c3 { color: var(--orange); }
+  .c4 { color: var(--purple); }
+  .c5 { color: var(--red); }
+  .note .c6 { color: var(--green); font-size: clamp(34px, 10vw, 52px); }
+  .squiggle { text-decoration: underline wavy currentColor 2px; text-underline-offset: 7px; }
+
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    min-height: 96px;
+    padding-block: 8px;
+  }
+  .btn {
+    font-family: var(--hand);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 3px 4px 0 var(--ink);
+    padding: 8px 30px 10px;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .btn:focus-visible { outline: 3px dashed var(--blue); outline-offset: 5px; }
+  #yes {
+    --grow: 1;
+    font-size: 38px;
+    background: var(--yes);
+    transform: rotate(-3deg) scale(var(--grow));
+    transition: transform .35s cubic-bezier(.3, 1.6, .5, 1);
+  }
+  #yes:hover { transform: rotate(2deg) scale(calc(var(--grow) * 1.06)); }
+  #yes:active { box-shadow: 1px 1px 0 var(--ink); }
+  #no {
+    font-size: 28px;
+    background: var(--no);
+    transform: rotate(4deg);
+    white-space: nowrap;
+  }
+  #no.free {
+    position: fixed;
+    z-index: 10;
+    margin: 0;
+    transition: left .28s cubic-bezier(.3, 1.4, .5, 1), top .28s cubic-bezier(.3, 1.4, .5, 1), transform .28s;
+  }
+  .tally {
+    margin: 0;
+    min-height: 1.3em;
+    font-family: var(--scrawl);
+    font-size: 26px;
+    color: var(--ink);
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .tally .five { text-decoration: line-through var(--red) 3px; margin-inline-end: 8px; letter-spacing: 2px; }
+  .tally .marks { letter-spacing: 2px; }
+
+  /* the "yes" screen */
+  .yay .yay-title {
+    margin: 0;
+    font-size: clamp(64px, 18vw, 110px);
+    line-height: 1;
+    color: var(--red);
+    transform: rotate(-4deg);
+  }
+  .big-heart { width: min(70vw, 260px); height: auto; display: block; }
+  .yay p { margin: 0; font-size: clamp(27px, 7.6vw, 40px); line-height: 1.15; }
+  .yay .small { font-family: var(--scrawl); font-size: 26px; color: var(--ink); }
+  #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #yes, #no.free { transition: none; }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- shared crayon filters and fills -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="crayon" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="1"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.2"/>
+    </filter>
+    <pattern id="fill-yellow" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <rect width="7" height="7" fill="#fff6c9"/><path d="M0 3.5H7" stroke="#ffcc1f" stroke-width="4.2"/>
+    </pattern>
+    <pattern id="fill-pink" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
+      <rect width="7" height="7" fill="#ffe1ef"/><path d="M0 3.5H7" stroke="#ff6fae" stroke-width="4.2"/>
+    </pattern>
+    <pattern id="fill-red" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+      <rect width="6" height="6" fill="#ffd9d6"/><path d="M0 3H6" stroke="#e5352b" stroke-width="4"/>
+    </pattern>
+    <pattern id="fill-brown" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(80)">
+      <rect width="6" height="6" fill="#f3dcc6"/><path d="M0 3H6" stroke="#9b5523" stroke-width="3.6"/>
+    </pattern>
+  </defs>
+</svg>
+
+<main class="page" id="ask" dir="rtl">
+  <p class="eyebrow">שאלה חשובה מאוד!!!</p>
+
+  <svg class="drawing" viewBox="0 0 320 182" role="img" aria-label="ציור: אני וליה מחזיקים ידיים מתחת לשמש, ועמרי מחוק בצד עם ענן גשם מעליו">
+    <g filter="url(#crayon)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+      <!-- sun -->
+      <path d="M308 38h10 M300 56l7 7 M282 64v10 M264 56l-7 7 M256 38h-10 M264 20l-7 -7 M282 12v-10 M300 20l7 -7" stroke="#f08a12"/>
+      <circle cx="282" cy="38" r="20" fill="url(#fill-yellow)" stroke="#f08a12"/>
+      <circle cx="275" cy="34" r="2" fill="#24235e" stroke="none"/>
+      <circle cx="289" cy="34" r="2" fill="#24235e" stroke="none"/>
+      <path d="M273 43q9 8 18 0" stroke="#24235e" stroke-width="2.4"/>
+
+      <!-- rain cloud over omri -->
+      <path d="M28 46q-10 -14 6 -18q4 -14 20 -8q12 -10 22 4q14 0 10 14z" fill="#ffffff" stroke="#7f93ad"/>
+      <path d="M38 56l-4 10 M52 58l-4 10 M66 56l-4 10" stroke="#2a5bcc" stroke-width="2.4"/>
+
+      <!-- omri (sad, crossed out) -->
+      <circle cx="55" cy="96" r="10" fill="#fffffb" stroke="#24235e"/>
+      <circle cx="51" cy="94" r="1.4" fill="#24235e" stroke="none"/>
+      <circle cx="59" cy="94" r="1.4" fill="#24235e" stroke="none"/>
+      <path d="M50 102q5 -4 10 0" stroke="#24235e" stroke-width="2"/>
+      <path d="M55 106V132 M55 114L41 127 M55 114L69 127 M55 132L46 151 M55 132L64 151" stroke="#24235e"/>
+      <path d="M30 80L80 152 M80 80L30 152" stroke="#d9352a" stroke-width="5"/>
+
+      <!-- grass -->
+      <path d="M0 155q8 -9 16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0" stroke="#3aa64a"/>
+
+      <!-- flower -->
+      <path d="M262 153V132" stroke="#3aa64a"/>
+      <circle cx="262" cy="124" r="5" fill="url(#fill-yellow)" stroke="#f08a12" stroke-width="2.4"/>
+      <path d="M262 119q-3 -8 0 -10q3 2 0 10 M267 124q8 -3 10 0q-2 3 -10 0 M262 129q3 8 0 10q-3 -2 0 -10 M257 124q-8 3 -10 0q2 -3 10 0" stroke="#d42f82" stroke-width="2.4"/>
+
+      <!-- lia -->
+      <path d="M138 98q0 -20 12 -20q12 0 12 20l4 16q-4 3 -8 -2l-2 -10h-12l-2 10q-4 5 -8 2z" fill="url(#fill-brown)" stroke="#9b5523" stroke-width="2.4"/>
+      <circle cx="150" cy="94" r="10" fill="#fffffb" stroke="#24235e"/>
+      <circle cx="146" cy="93" r="1.4" fill="#24235e" stroke="none"/>
+      <circle cx="154" cy="93" r="1.4" fill="#24235e" stroke="none"/>
+      <path d="M145 98q5 5 10 0" stroke="#24235e" stroke-width="2"/>
+      <path d="M150 104L134 137H166Z" fill="url(#fill-pink)" stroke="#24235e"/>
+      <path d="M144 137L142 153 M156 137L158 153 M144 113L124 99 M156 113L177 121" stroke="#24235e"/>
+
+      <!-- me -->
+      <path d="M196 88l2 -6l3 5l3 -7l3 7l3 -5l2 6" stroke="#24235e" stroke-width="2.4"/>
+      <circle cx="205" cy="94" r="10" fill="#fffffb" stroke="#24235e"/>
+      <circle cx="201" cy="93" r="1.4" fill="#24235e" stroke="none"/>
+      <circle cx="209" cy="93" r="1.4" fill="#24235e" stroke="none"/>
+      <path d="M200 98q5 5 10 0" stroke="#24235e" stroke-width="2"/>
+      <path d="M205 104V134 M205 114L177 121 M205 114L227 99 M205 134L196 153 M205 134L214 153" stroke="#24235e"/>
+
+      <!-- heart -->
+      <path d="M178 80c-14 -9 -16 -21 -7 -23c4 -1 7 2 7 5c0 -3 3 -6 7 -5c9 2 7 14 -7 23z" fill="url(#fill-red)" stroke="#d9352a" stroke-width="2.4"/>
+
+      <!-- labels -->
+      <g font-family="Gveret Levin, Amatic SC, sans-serif" font-size="17" text-anchor="middle" stroke="none">
+        <text x="55" y="175" fill="#d9352a">עמרי</text>
+        <text x="150" y="175" fill="#d42f82">ליה</text>
+        <text x="205" y="175" fill="#2a5bcc">אני</text>
+      </g>
+    </g>
+  </svg>
+
+  <div class="note">
+    <p class="c1">ליה הכוסית מבת ים</p>
+    <p class="c2">שחייה בסרט עם נמש</p>
+    <p class="c3">היה די כיף בדייט</p>
+    <p class="c4">אבל נראה לי צריך <span class="squiggle">דייט אמיתי</span></p>
+    <p class="c5">בלי עמרי הפעם</p>
+    <p class="c6">מה את אומרת?</p>
+  </div>
+
+  <div class="choices">
+    <button class="btn" id="yes" type="button">כן!!!</button>
+    <button class="btn" id="no" type="button" tabindex="-1">לא</button>
+  </div>
+  <p class="tally" id="tally" aria-live="polite"></p>
+</main>
+
+<main class="page yay" id="yay" dir="rtl" hidden>
+  <p class="yay-title">ידעתי!!!</p>
+  <svg class="big-heart" viewBox="0 0 200 180" role="img" aria-label="לב גדול: אני + ליה">
+    <g filter="url(#crayon)">
+      <path d="M100 165C40 120 8 85 22 50C34 20 78 18 100 52C122 18 166 20 178 50C192 85 160 120 100 165Z" fill="url(#fill-pink)" stroke="#d42f82" stroke-width="4" stroke-linejoin="round"/>
+      <text x="100" y="100" font-family="Gveret Levin, Amatic SC, sans-serif" font-size="30" text-anchor="middle" fill="#24235e">אני + ליה</text>
+    </g>
+  </svg>
+  <p class="c2">קבענו דייט אמיתי</p>
+  <p class="c5">בלי עמרי</p>
+  <p class="c4">עכשיו תשלחי לי מתי את פנויה</p>
+  <p class="small" id="summary"></p>
+</main>
+
+<canvas id="fx" hidden></canvas>
+
+<script>
+(() => {
+  document.documentElement.lang = 'he';
+  document.documentElement.dir = 'rtl';
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const yes = document.getElementById('yes');
+  const no = document.getElementById('no');
+  const tally = document.getElementById('tally');
+
+  // hand-drawn "boiling" lines, like a cartoon
+  const turb = document.getElementById('turb');
+  if (!reduce) {
+    let seed = 1;
+    setInterval(() => { seed = seed % 4 + 1; turb.setAttribute('seed', seed); }, 150);
+  }
+
+  const taunts = [
+    'בטוחה?', 'נו באמת', 'לא לא לא', 'חחח ניסיון יפה', 'עמרי לא יעזור לך',
+    'הכפתור הזה שבור', 'אין מצב', 'פספסת', 'תלחצי על כן כבר', 'עוד פעם?',
+    'את מתעייפת?', 'זה כבר מביך', 'הכן זה הכפתור השני',
+  ];
+
+  let tries = 0;
+  let lastCount = 0;
+  let freed = false;
+  let lastPlace = 0;
+
+  function free() {
+    if (freed) return;
+    const r = no.getBoundingClientRect();
+    document.body.appendChild(no); // escape any rotated parent so position:fixed is the viewport
+    no.classList.add('free');
+    no.style.left = r.left + 'px';
+    no.style.top = r.top + 'px';
+    no.offsetWidth; // start the slide from where it was
+    freed = true;
+  }
+
+  function overlapsYes(x, y, w, h) {
+    const r = yes.getBoundingClientRect();
+    const pad = 46; // room for the yes button to keep growing
+    return !(x + w < r.left - pad || x > r.right + pad || y + h < r.top - pad || y > r.bottom + pad);
+  }
+
+  function place(px, py) {
+    const w = no.offsetWidth, h = no.offsetHeight;
+    const m = 14;
+    const maxX = Math.max(m, innerWidth - w - m);
+    const maxY = Math.max(m, innerHeight - h - m);
+    let best = null, bestD = -1;
+    for (let i = 0; i < 60; i++) {
+      const x = m + Math.random() * (maxX - m);
+      const y = m + Math.random() * (maxY - m);
+      if (overlapsYes(x, y, w, h)) continue;
+      const d = px == null ? 1e4 : Math.hypot(x + w / 2 - px, y + h / 2 - py);
+      if (d > 160) { best = { x, y }; break; }
+      if (d > bestD) { bestD = d; best = { x, y }; }
+    }
+    if (!best) best = { x: m, y: m };
+    no.style.left = best.x + 'px';
+    no.style.top = best.y + 'px';
+    no.style.transform = 'rotate(' + (Math.random() * 26 - 13).toFixed(1) + 'deg)';
+    lastPlace = performance.now();
+  }
+
+  function renderTally() {
+    const fives = Math.floor(tries / 5), rest = tries % 5;
+    tally.textContent = 'ניסיונות להגיד לא: ';
+    for (let i = 0; i < fives; i++) {
+      const s = document.createElement('span');
+      s.className = 'five';
+      s.textContent = '|||||';
+      tally.appendChild(s);
+    }
+    if (rest) {
+      const s = document.createElement('span');
+      s.className = 'marks';
+      s.textContent = '|'.repeat(rest);
+      tally.appendChild(s);
+    }
+  }
+
+  function flee(px, py) {
+    free();
+    const now = performance.now();
+    if (now - lastCount > 300) { // one tap fires several events; count it once
+      lastCount = now;
+      tries++;
+      no.textContent = taunts[(tries - 1) % taunts.length];
+      yes.style.setProperty('--grow', Math.min(1 + tries * 0.07, 1.7).toFixed(2));
+      renderTally();
+    }
+    place(px, py);
+  }
+
+  no.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    flee(t.clientX, t.clientY);
+  }, { passive: false });
+  no.addEventListener('pointerdown', e => { e.preventDefault(); flee(e.clientX, e.clientY); });
+  no.addEventListener('mouseenter', e => flee(e.clientX, e.clientY));
+  no.addEventListener('click', e => { e.preventDefault(); flee(); });
+  no.addEventListener('keydown', e => { e.preventDefault(); flee(); });
+
+  // on a computer it runs before the cursor even gets there
+  document.addEventListener('mousemove', e => {
+    if (no.hidden || performance.now() - lastPlace < 300) return; // let it finish sliding away
+    const r = no.getBoundingClientRect();
+    const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+    const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+    if (Math.hypot(dx, dy) < 45) flee(e.clientX, e.clientY);
+  });
+
+  addEventListener('resize', () => {
+    if (!freed || no.hidden) return;
+    const w = no.offsetWidth, h = no.offsetHeight;
+    const x = Math.min(parseFloat(no.style.left), innerWidth - w - 14);
+    const y = Math.min(parseFloat(no.style.top), innerHeight - h - 14);
+    no.style.left = Math.max(14, x) + 'px';
+    no.style.top = Math.max(14, y) + 'px';
+  });
+
+  yes.addEventListener('click', () => {
+    no.hidden = true;
+    document.getElementById('ask').hidden = true;
+    document.getElementById('yay').hidden = false;
+    document.getElementById('summary').textContent = tries === 0
+      ? '(ואפילו לא ניסית להגיד לא. מכובד.)'
+      : tries === 1
+        ? '(אחרי ניסיון אחד בלבד להגיד לא)'
+        : '(אחרי ' + tries + ' ניסיונות להגיד לא)';
+    scrollTo(0, 0);
+    if (!reduce) hearts();
+  });
+
+  function hearts() {
+    const c = document.getElementById('fx');
+    c.hidden = false;
+    const ctx = c.getContext('2d');
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const size = () => { c.width = innerWidth * dpr; c.height = innerHeight * dpr; };
+    size();
+    addEventListener('resize', size);
+    const colors = ['#e5352b', '#ff6fae', '#d42f82', '#ffcc1f', '#8ad86f', '#2a5bcc', '#7438bd'];
+    const bits = Array.from({ length: 110 }, () => ({
+      x: Math.random() * innerWidth,
+      y: -20 - Math.random() * innerHeight,
+      s: 12 + Math.random() * 18,
+      vy: 1.6 + Math.random() * 2.6,
+      sway: Math.random() * Math.PI * 2,
+      rot: Math.random() * 0.8 - 0.4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+    const start = performance.now();
+    function heart(s) {
+      ctx.beginPath();
+      ctx.moveTo(0, s * 0.3);
+      ctx.bezierCurveTo(0, 0, -s * 0.5, 0, -s * 0.5, s * 0.3);
+      ctx.bezierCurveTo(-s * 0.5, s * 0.6, 0, s * 0.75, 0, s);
+      ctx.bezierCurveTo(0, s * 0.75, s * 0.5, s * 0.6, s * 0.5, s * 0.3);
+      ctx.bezierCurveTo(s * 0.5, 0, 0, 0, 0, s * 0.3);
+      ctx.fill();
+    }
+    function frame(now) {
+      const t = now - start;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      ctx.globalAlpha = t > 6000 ? Math.max(0, 1 - (t - 6000) / 1500) : 1;
+      for (const b of bits) {
+        b.y += b.vy;
+        b.sway += 0.04;
+        if (b.y > innerHeight + 30 && t < 4500) b.y = -30;
+        ctx.save();
+        ctx.translate(b.x + Math.sin(b.sway) * 18, b.y);
+        ctx.rotate(b.rot + Math.sin(b.sway) * 0.25);
+        ctx.fillStyle = b.color;
+        heart(b.s);
+        ctx.restore();
+      }
+      if (t < 7500) requestAnimationFrame(frame);
+      else c.hidden = true;
+    }
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
